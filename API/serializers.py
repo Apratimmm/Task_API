@@ -1,8 +1,9 @@
 from rest_framework.relations import HyperlinkedRelatedField
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, CharField, ValidationError
 from rest_framework.serializers import HyperlinkedModelSerializer
 from .models import USER,TASK
 from rest_framework.reverse import reverse
+from django.contrib.auth.models import User as auth_user
 
 class UserSerializer(ModelSerializer):
 
@@ -33,4 +34,25 @@ class TaskSerializer(ModelSerializer):
         model = TASK
         fields = '__all__'
 
+class RegisterSerializer(ModelSerializer):
 
+    class Meta:
+        model = auth_user
+        fields = ['username','password','confirm_password']
+
+    password = CharField(required=True, write_only=True)
+    confirm_password = CharField(required=True, write_only=True)
+
+    def validate(self, attrs):
+        password = attrs.get('password')
+        confirm_password = attrs.get('confirm_password')
+        if password != confirm_password:
+            raise ValidationError('Passwords must match')
+        return attrs
+
+    def create(self, validated_data):
+        user = auth_user.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+        return user

@@ -16,16 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from rest_framework.authtoken import views as rfv
 from rest_framework_simplejwt import views as jwtv
 
 import API
+from main.settings import ALLOW_BROWSABLEAPI_LOGIN
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('API.urls')),
-    path('auth/', include('rest_framework.urls')),
-    path('token/',rfv.obtain_auth_token,name='get_token'),
     path('access_token/',jwtv.token_obtain_pair,name='get_access_token'),
     path('refresh_token/',jwtv.token_refresh,name='get_refresh_token'),
 ]
+
+if ALLOW_BROWSABLEAPI_LOGIN:
+    urlpatterns += [
+        path('auth/', include('rest_framework.urls')),
+    ]

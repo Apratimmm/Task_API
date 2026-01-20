@@ -1,11 +1,12 @@
-from rest_framework import permissions
-from rest_framework.authentication import TokenAuthentication
-from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from pyexpat.errors import messages
+from rest_framework import permissions, status
+from rest_framework.generics import ListCreateAPIView
 from .models import USER,TASK
-from .serializers import UserSerializer, TaskSerializer
+from django.contrib.auth.models import User as auth_user
+from .serializers import UserSerializer, TaskSerializer, RegisterSerializer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from rest_framework.response import Response
 
 class Simple_Pagination(PageNumberPagination):
     page_size = 5                       #default
@@ -67,3 +68,18 @@ class show_tasks(ModelViewSet):
     #         queryset = queryset.filter(assigned_to__in=to.split(','))
     #
     #     return queryset
+
+class register_user(ListCreateAPIView):
+    'Register a new user'
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = RegisterSerializer
+    queryset = auth_user.objects.all()
+    pagination_class = Simple_Pagination
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+
+

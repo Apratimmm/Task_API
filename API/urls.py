@@ -24,4 +24,7 @@ router = routers.DefaultRouter()
 router.register(r'users', show_users,basename='user')
 router.register(r'tasks', show_tasks,basename='task')
 
-urlpatterns = [path('',include(router.urls))]
+urlpatterns = [
+                path('endpoint/',include(router.urls)),
+                path('register/',register_user.as_view(),name='register')
+            ]
