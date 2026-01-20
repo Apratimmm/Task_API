@@ -30,13 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-lvlsjxpnr+b*xc&9a+=#h*i@qwtyze7#r+*p(74$a=66-%=xj7'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-lvlsjxpnr+b*xc&9a+=#h*i@qwtyze7#r+*p(74$a=66-%=xj7')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False')
-ALLOW_BROWSABLEAPI_LOGIN = os.getenv('ALLOW_BROWSABLEAPI_LOGIN', 'False')
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+ALLOW_BROWSABLEAPI_LOGIN = os.getenv('ALLOW_BROWSABLEAPI_LOGIN', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -72,7 +72,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.backends.DjangoFilterBackend'],
 }
 
-if os.getenv('BROWSABLE_API','False'):
+if os.getenv('BROWSABLE_API','False').lower() == 'true':
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
 
 SIMPLE_JWT = {
@@ -114,7 +114,7 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-if os.getenv('LOCAL_DB', 'False'):
+if os.getenv('LOCAL_DB', 'False').lower() == 'true':
     DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',
